@@ -1,1 +1,0 @@
-savedcmd_/home/ubuntu/linux_kernel_study/01_hello_world/Module.symvers :=  scripts/mod/modpost -M -m       -o /home/ubuntu/linux_kernel_study/01_hello_world/Module.symvers -T /home/ubuntu/linux_kernel_study/01_hello_world/modules.order -i Module.symvers -e 

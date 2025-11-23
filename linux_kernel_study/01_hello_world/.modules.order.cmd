@@ -1,1 +1,0 @@
-savedcmd_/home/ubuntu/linux_kernel_study/01_hello_world/modules.order := {   echo /home/ubuntu/linux_kernel_study/01_hello_world/my_kernel.o; :; } > /home/ubuntu/linux_kernel_study/01_hello_world/modules.order

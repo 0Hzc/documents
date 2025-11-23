@@ -1,1 +1,0 @@
-savedcmd_/home/ubuntu/linux_kernel_study/01_hello_world/my_kernel.mod := printf '%s\n'   my_kernel.o | awk '!x[$$0]++ { print("/home/ubuntu/linux_kernel_study/01_hello_world/"$$0) }' > /home/ubuntu/linux_kernel_study/01_hello_world/my_kernel.mod
