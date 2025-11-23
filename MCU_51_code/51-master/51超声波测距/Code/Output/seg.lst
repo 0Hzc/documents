@@ -1,0 +1,48 @@
+C51 COMPILER V9.54   SEG                                                                   11/16/2022 10:50:31 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE SEG
+OBJECT MODULE PLACED IN ..\Output\seg.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\seg.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJECTE
+                    -XTEND PRINT(..\Output\seg.lst) OBJECT(..\Output\seg.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+   2             
+   3          
+   4          unsigned char seg_code[]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
+   5                                          0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};//´Ó0µ½FµÄÏÔÊ¾
+   6                                  
+   7          void Seg_Display(unsigned long dat,unsigned char val)             //datÎªÍâ²¿´«ÈëµÄÊýÖµ£¬½«ÆäÔÚÊýÂë¹ÜÉÏÏÔÊ
+             -¾£¬´æÔÚbug£¬ÊýÖµÌ«´ó£¬Êý¾Ý»á±ä³É²»ÊÇÏëÒªµÄ
+   8          {
+   9   1              unsigned char i,j =0;   
+  10   1              unsigned char seg_display[8];
+  11   1              for(i = 0;i<8;i++)
+  12   1          {
+  13   2                  seg_display[i]=dat%val;
+  14   2                  dat = dat/val;            
+  15   2                 j =(i<<2);                       //´Ë´¦ÓÃÓÚiÎª¼¸¶ÔÓ¦µÚ¼¸¸ö¹Ü×Ó
+  16   2                  P3 = 0;
+  17   2                  P3 = P3| j ;
+  18   2                  P0 = seg_code[seg_display[i]];      //µÚ¼¸¸ö¹Ü×Ó¶ÔÓ¦µÚ¼¸Î»¶ÔÓ¦Êý×Ö¼¸
+  19   2              if(dat == 0)
+  20   2                      break;
+  21   2          }
+  22   1      
+  23   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    126    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     16      15
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

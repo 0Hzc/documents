@@ -1,0 +1,104 @@
+C51 COMPILER V9.54   MAIN                                                                  11/26/2022 14:19:28 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN ..\Output\main.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJECT
+                    -EXTEND PRINT(..\Output\main.lst) OBJECT(..\Output\main.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+   2          unsigned char ad_result= 0;
+   3          unsigned char flag = 0;
+   4          unsigned int time1= 1;
+   5          unsigned int time2= 1;
+   6          void Time0_Init();
+   7          
+   8          void main()
+   9          {
+  10   1          Time0_Init();
+  11   1          LED = 0x00;//初始将LED灯全部熄灭
+  12   1          Lcd1602_Init(); //LCD初始化
+  13   1      while(1)
+  14   1      {      
+  15   2          ad_result = Adc_Conv();     //将采集的模拟量经过放大电路以及模数转换后存入ad_result变量中
+  16   2          Lcd1602_Show_string(0,0,"Voice:");      //在LCD屏幕上显示Voice
+  17   2          Lcd1602_Show_string(11,0,"dB");     //在LCD屏幕上显示dB
+  18   2          Lcd1602_Show_string(2,1,"T1:");
+  19   2          Lcd1602_Show_string(8,1,"T2:");
+  20   2          Lcd1602_Show_string(7,0,data_str(ad_result));       //在LCD屏幕上显示声音值
+  21   2          
+  22   2              if(ad_result>10)
+  23   2              { 
+  24   3                  TR0 = 1;
+  25   3              Lcd1602_Show_string(5,1,Dis_Str(data_str(time1),"s"));   
+  26   3              }
+  27   2              else if(ad_result>20)
+  28   2              {
+  29   3                  TR0 = 1;
+  30   3              Lcd1602_Show_string(10,1,Dis_Str(data_str(time2),"s"));
+  31   3              }
+  32   2              else 
+  33   2                  TR0 = 0;
+  34   2      
+  35   2          //以下部分为实现达到一定分贝在LCD上显示对应字符
+  36   2      //    if(ad_result==50)       
+  37   2      //    flag=1;
+  38   2      //    if(ad_result==100)
+  39   2      //    flag=2;
+  40   2      //    if(ad_result==150)
+  41   2      //    flag=3;
+  42   2      //    switch(flag)
+  43   2      //    {
+  44   2      //        case 1:Lcd1602_Clear();Lcd1602_Show_string(0,1,"Didn't you eat?");flag = 0;delay(5000);break;
+  45   2      //        case 2:Lcd1602_Clear();Lcd1602_Show_string(0,1,"Louder");flag = 0;delay(5000);break;
+  46   2      //        case 3:Lcd1602_Clear();Lcd1602_Show_string(0,1,"Just so so");flag = 0;delay(5000);break;   
+  47   2      //    }
+  48   2          Led_Show();     //执行炫彩灯
+  49   2      }
+  50   1      
+  51   1      }
+  52          
+  53          void Time0_Init()
+  54          {
+C51 COMPILER V9.54   MAIN                                                                  11/26/2022 14:19:28 PAGE 2   
+
+  55   1              TMOD = (TMOD & 0XF0)  | 0X01;      
+  56   1              TL0 =(65536-1000);              
+  57   1              TH0 = (62236-1000)/256;
+  58   1              TF0 = 0;
+  59   1      //        TR0 = 1;
+  60   1              EA = 1;
+  61   1              ET0 = 1;
+  62   1      }
+  63          
+  64          
+  65          void Time0() interrupt 1
+  66          {
+  67   1         static  unsigned int time_flag = 0;
+  68   1              TH0 = (65536-1000)/256;
+  69   1              TL0 = (65536-1000);
+  70   1              TF0 = 0;
+  71   1              time_flag++;
+  72   1          if(time_flag==1000)
+  73   1          {
+  74   2              time_flag = 0;
+  75   2              time1++;
+  76   2              time2++;
+  77   2          }
+  78   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    242    ----
+   CONSTANT SIZE    =     20    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      8    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

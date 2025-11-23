@@ -1,0 +1,57 @@
+C51 COMPILER V9.54   MOTOR                                                                 11/23/2022 20:14:24 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MOTOR
+OBJECT MODULE PLACED IN ..\Output\motor.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\motor.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJEC
+                    -TEXTEND PRINT(..\Output\motor.lst) OBJECT(..\Output\motor.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+   2          extern unsigned int mode;
+   3          unsigned char pwm_flag;
+   4          
+   5          void Time0_init()                                //使用定时器0实现1MS的定时
+   6          {
+   7   1              TMOD = (TMOD & 0XF0)  | 0X01;       //选择定时器0以工作模式1工作
+   8   1              TL0 =(65536-1000);              
+   9   1              TH0 = (62236-1000)/256;
+  10   1              TR0 = 1;                                     //打开定时器0
+  11   1              ET0 = 1;                                        //打开定时器中断
+  12   1              EA = 1;                                         //打开总中断
+  13   1      }
+  14          
+  15          void Timer_0() interrupt 1      //定时器0的中断函数
+  16          {
+  17   1              TL0 =(65536-1000);              
+  18   1              TH0 = (62236-1000)/256;          //重装初值
+  19   1              pwm_flag++;
+  20   1      
+  21   1      //下面为实现PWM部分所需  
+  22   1            if(pwm_flag>10)   pwm_flag = 0;
+  23   1            //下面为设计对应所需占空比，所需实现的效果 
+  24   1              if(pwm_flag<mode)  
+  25   1              {
+  26   2                  Motor_IO = 1;
+  27   2              }
+  28   1              else 
+  29   1              {
+  30   2                  Motor_IO = 0;
+  31   2              }     
+  32   1      }
+  33             
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     64    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      1    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

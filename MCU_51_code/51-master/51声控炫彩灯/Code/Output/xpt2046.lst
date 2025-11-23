@@ -1,0 +1,110 @@
+C51 COMPILER V9.54   XPT2046                                                               11/26/2022 00:07:38 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE XPT2046
+OBJECT MODULE PLACED IN ..\Output\xpt2046.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\xpt2046.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJ
+                    -ECTEXTEND PRINT(..\Output\xpt2046.lst) OBJECT(..\Output\xpt2046.obj)
+
+line level    source
+
+   1          #include "pbdata.h"
+   2          
+   3          
+   4          
+   5          /*******************************************************************************
+   6          * 函 数 名       : xpt2046_wirte_data
+   7          * 函数功能               : XPT2046写数据
+   8          * 输    入       : dat：写入的数据
+   9          * 输    出       : 无
+  10          *******************************************************************************/
+  11          void xpt2046_wirte_data(u8 dat)
+  12          {
+  13   1              u8 i;
+  14   1      
+  15   1              CLK = 0;
+  16   1              _nop_();
+  17   1              for(i=0;i<8;i++)//循环8次，每次传输一位，共一个字节
+  18   1              {
+  19   2                      DIN = dat >> 7;//先传高位再传低位
+  20   2                      dat <<= 1;//将低位移到高位
+  21   2                      CLK = 0;//CLK由低到高产生一个上升沿，从而写入数据
+  22   2                      _nop_();        
+  23   2                      CLK = 1;
+  24   2                      _nop_();
+  25   2              }
+  26   1      }
+  27          
+  28          /*******************************************************************************
+  29          * 函 数 名       : xpt2046_read_data
+  30          * 函数功能               : XPT2046读数据
+  31          * 输    入       : 无
+  32          * 输    出       : XPT2046返回12位数据
+  33          *******************************************************************************/
+  34          u16     xpt2046_read_data(void)
+  35          {
+  36   1              u8 i;
+  37   1              u16 dat=0;
+  38   1      
+  39   1              CLK = 0;
+  40   1              _nop_();
+  41   1              for(i=0;i<12;i++)//循环12次，每次读取一位，大于一个字节数，所以返回值类型是u16
+  42   1              {
+  43   2                      dat <<= 1;
+  44   2                      CLK = 1;
+  45   2                      _nop_();
+  46   2                      CLK = 0; //CLK由高到低产生一个下降沿，从而读取数据
+  47   2                      _nop_();
+  48   2                      dat |= DOUT;//先读取高位，再读取低位。  
+  49   2              }
+  50   1              return dat;     
+  51   1      }
+  52          
+  53          /*******************************************************************************
+  54          * 函 数 名       : xpt2046_read_adc_value
+C51 COMPILER V9.54   XPT2046                                                               11/26/2022 00:07:38 PAGE 2   
+
+  55          * 函数功能               : XPT2046读AD数据
+  56          * 输    入       : cmd：指令
+  57          * 输    出       : XPT2046返回AD值
+  58          *******************************************************************************/
+  59          u16 xpt2046_read_adc_value(u8 cmd)
+  60          {
+  61   1              u8 i;
+  62   1              u16 adc_value=0;
+  63   1      
+  64   1              CLK = 0;//先拉低时钟
+  65   1              CS  = 0;//使能XPT2046
+  66   1              xpt2046_wirte_data(cmd);//发送命令字
+  67   1              for(i=6; i>0; i--);//延时等待转换结果
+  68   1              CLK = 1;
+  69   1              _nop_();
+  70   1              CLK = 0;//发送一个时钟，清除BUSY
+  71   1              _nop_();
+  72   1              adc_value=xpt2046_read_data();
+  73   1              CS = 1;//关闭XPT2046
+  74   1              return adc_value;
+  75   1      }
+  76          
+  77          unsigned char Adc_Conv() 
+  78          {    
+  79   1          u16 adc_value=0;
+  80   1          adc_value=xpt2046_read_adc_value(0xE4);//测量外部输入通道AIN3
+  81   1          return adc_value;
+  82   1          
+  83   1      
+  84   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     96    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

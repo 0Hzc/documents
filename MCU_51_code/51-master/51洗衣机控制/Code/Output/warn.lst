@@ -1,0 +1,40 @@
+C51 COMPILER V9.54   WARN                                                                  11/20/2022 22:56:28 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE WARN
+OBJECT MODULE PLACED IN ..\Output\warn.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\warn.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJECT
+                    -EXTEND PRINT(..\Output\warn.lst) OBJECT(..\Output\warn.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+   2          #include"intrins.h"
+   3          
+   4          
+   5          void Warning()
+   6          {
+   7   1      //    unsigned int i=1000;
+   8   1      //    unsigned long j = 1000;
+   9   1      //    while(j--)      //—≠ª∑µ„¡¡µ∆
+  10   1      //    { 
+  11   1      //        LED = 1;      
+  12   1      //        while(i--) _nop_(); //—” ±100Œ¢√Î
+  13   1      //        LED = 0;
+  14   1      //    }
+  15   1      
+  16   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =      1    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

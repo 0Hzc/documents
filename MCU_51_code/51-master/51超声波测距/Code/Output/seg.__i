@@ -1,0 +1,1 @@
+"..\Source\seg.c" OPTIMIZE (8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJECTEXTEND PRINT(..\Output\seg.lst) OBJECT(..\Output\seg.obj)
