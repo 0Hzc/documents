@@ -21,5 +21,5 @@ module_exit(my_hello_exit);
 
 // 4.必须加的版权声明，否则内核会抱怨你是“黑户”
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("YourName");
+MODULE_AUTHOR("0hzc");
 MODULE_DESCRIPTION("A simple Hello World Module");
