@@ -1,4 +1,4 @@
-obj-m += my_kernel.o
+obj-m += my_kernel_malloc.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
