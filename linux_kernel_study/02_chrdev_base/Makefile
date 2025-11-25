@@ -1,4 +1,4 @@
-obj-m += chrdev_base.o
+obj-m += chrdev_rw.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
