@@ -1,2 +1,0 @@
-# Os
-learn os
