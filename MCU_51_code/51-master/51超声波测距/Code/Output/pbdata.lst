@@ -1,0 +1,91 @@
+C51 COMPILER V9.54   PBDATA                                                                11/25/2022 23:02:20 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE PBDATA
+OBJECT MODULE PLACED IN ..\Output\pbdata.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\pbdata.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJE
+                    -CTEXTEND PRINT(..\Output\pbdata.lst) OBJECT(..\Output\pbdata.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+   2                  
+   3              unsigned char dis_data[20]={0};
+   4              unsigned char i,length,dat_length;
+   5              unsigned char dis_str[20]={0};
+   6          void Timer1_Init()
+   7          {
+   8   1              TMOD|=0X01;
+   9   1              TH0=0XFC;       
+  10   1              TL0=0X18;       
+  11   1              ET1=1;
+  12   1              EA=1;
+  13   1      }
+  14          
+  15          char* data_str(unsigned int dat)
+  16          {        
+  17   1              for(i=0;i<20;i++)
+  18   1          {
+  19   2              dis_data[i] = 0;
+  20   2          }
+  21   1                      dat_length = dat;       
+  22   1                      for(length =0;dat_length!= 0;length++)      //测量传递的数有多长
+  23   1              {       
+  24   2                              dat_length = dat_length/10;
+  25   2              }       
+  26   1                      for(i = 0;i<length;i++)            //将每一位对应的值存入数组dis_data[]
+  27   1              {
+  28   2                              dis_data[length-i-1] = ((dat%10)+'0');         
+  29   2                              dat = dat/10;   
+  30   2              }       
+  31   1          return dis_data;
+  32   1      }
+  33          
+  34          char Strlen(char *str)
+  35          {
+  36   1          char i = 0;
+  37   1          while(str[i] != '\0') i++;
+  38   1          return i;
+  39   1      }
+  40          
+  41          char *Dis_Str(char *str1,char *str2)
+  42          {
+  43   1          char inew = 0,i1 = 0, i2 = 0;
+  44   1          while(i1<Strlen(str1))
+  45   1          {
+  46   2             dis_str[inew++] = str1[i1++];
+  47   2          }
+  48   1          while(i2<Strlen(str2))
+  49   1          {
+  50   2             dis_str[inew++] = str2[i2++];
+  51   2          }
+  52   1          while(inew<16)
+  53   1          {
+  54   2              dis_str[inew++] =' ';
+C51 COMPILER V9.54   PBDATA                                                                11/25/2022 23:02:20 PAGE 2   
+
+  55   2          }
+  56   1          return dis_str;
+  57   1      }
+  58          
+  59          void delay(unsigned long ten_us)
+  60          {
+  61   1          while(ten_us--)     //10us延时
+  62   1          {_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();_nop_();}
+  63   1      }
+  64          
+  65          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    334    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     43      17
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

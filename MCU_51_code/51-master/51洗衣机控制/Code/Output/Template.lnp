@@ -1,0 +1,7 @@
+"..\Output\button.obj",
+"..\Output\lcd1602.obj",
+"..\Output\main.obj",
+"..\Output\pbdata.obj",
+"..\Output\motor.obj" 
+TO "..\Output\Template" 
+PRINT("..\Output\Template.m51")

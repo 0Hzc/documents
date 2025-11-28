@@ -1,0 +1,82 @@
+C51 COMPILER V9.54   HC_SR04                                                               11/15/2022 23:09:26 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE HC_SR04
+OBJECT MODULE PLACED IN ..\Output\hc_sr04.obj
+COMPILER INVOKED BY: D:\Tool\Keil\C51\BIN\C51.EXE ..\Source\hc_sr04.c OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Head) DEBUG OBJ
+                    -ECTEXTEND PRINT(..\Output\hc_sr04.lst) OBJECT(..\Output\hc_sr04.obj)
+
+line level    source
+
+   1          #include"pbdata.h"
+*** ERROR C132 IN LINE 9 OF ..\Head\pbdata.h: '_data_str': not in formal parameter list
+*** ERROR C132 IN LINE 11 OF ..\Head\pbdata.h: '_delay': not in formal parameter list
+   2          unsigned int distence;
+*** ERROR C132 IN LINE 2 OF ..\Source\hc_sr04.c: 'distence': not in formal parameter list
+   3          //T1用于计时高电平时间，外部中断1接收回拨
+   4          
+   5          void Timer1_Init()      //定时器1初始化函数
+   6          {
+*** ERROR C132 IN LINE 6 OF ..\Source\hc_sr04.c: 'Timer1_Init': not in formal parameter list
+*** ERROR C141 IN LINE 6 OF ..\Source\hc_sr04.c: syntax error near '{'
+   7                  TMOD|=0X10;                
+*** ERROR C136 IN LINE 7 OF ..\Source\hc_sr04.c: 'TMOD': 'void' on variable
+*** ERROR C132 IN LINE 7 OF ..\Source\hc_sr04.c: 'TMOD': not in formal parameter list
+   8                  ET0=1;              
+*** ERROR C136 IN LINE 8 OF ..\Source\hc_sr04.c: 'ET0': 'void' on variable
+*** ERROR C244 IN LINE 8 OF ..\Source\hc_sr04.c: 'ET0': can't initialize, bad type or class
+*** ERROR C136 IN LINE 8 OF ..\Source\hc_sr04.c: 'ET0': 'void' on variable
+*** ERROR C132 IN LINE 8 OF ..\Source\hc_sr04.c: 'ET0': not in formal parameter list
+   9                  TR0=1;             
+*** ERROR C244 IN LINE 9 OF ..\Source\hc_sr04.c: 'TR0': can't initialize, bad type or class
+*** ERROR C132 IN LINE 9 OF ..\Source\hc_sr04.c: 'TR0': not in formal parameter list
+  10                  EA=1;             
+*** ERROR C244 IN LINE 10 OF ..\Source\hc_sr04.c: 'EA': can't initialize, bad type or class
+*** ERROR C132 IN LINE 10 OF ..\Source\hc_sr04.c: 'EA': not in formal parameter list
+  11          }
+*** ERROR C141 IN LINE 11 OF ..\Source\hc_sr04.c: syntax error near '}'
+  12          void Int1_Init()        //外部中断1初始化函数         
+  13          {
+  14   1          IT1 = 1;    
+  15   1          EX1 = 1;    
+  16   1          EA = 1;
+  17   1          PX = 1;     //设置外部中断1为高级中断
+*** ERROR C202 IN LINE 17 OF ..\Source\hc_sr04.c: 'PX': undefined identifier
+  18   1      }
+  19          void Hc_sr04_Time_Init()
+  20          {       
+  21   1              Int1_Init();
+  22   1              Timer1_Init()；
+*** ERROR C100 IN LINE 22 OF ..\Source\hc_sr04.c: unprintable character 0xA3 skipped
+*** ERROR C100 IN LINE 22 OF ..\Source\hc_sr04.c: unprintable character 0xBB skipped
+  23   1              unsigned char i ;
+  24   1              EA = 0;         //关闭总中断
+  25   1              Trig = 1;
+  26   1              i = 2;          
+  27   1              while(i--);        
+  28   1              Trig = 0;       //使Trig端发送一个短高电平脉冲
+  29   1              while(Echo == 0);       //等待Echo端为高电平，表示开始接收
+  30   1              TH1 = 0;        //将定时器1的值清空，用于计时Echo高电平持续时间
+  31   1              TL1 = 0;
+  32   1              TR1 = 1;        //打开计时器1
+  33   1              EA = 1;     //同时打开总中断
+  34   1          while(TH1<0XC0)     //表示若计时器接收时间太长表示距离太远，超出范围则会执行完while后关闭TR1与EX1
+  35   1          {
+C51 COMPILER V9.54   HC_SR04                                                               11/15/2022 23:09:26 PAGE 2   
+
+  36   2                  if(EX1 == 0)         //若进入了外部中断1，直接退出也不再等待了
+  37   2                        break;   
+  38   2          }
+  39   1              TR1 = 0;
+  40   1              EX1 = 0;          
+  41   1      }
+  42          
+  43          void Int1() interrupt 2             //外部中断1服务函数
+  44          {
+  45   1              EX1 = 0;
+  46   1              TR1 = 0;
+  47   1          distence = (TH1*256+TL1)*1.0592/58;     //计算距离
+  48   1      }
+  49          
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  19 ERROR(S)
