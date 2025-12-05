@@ -1,0 +1,5 @@
+export LFS=/mnt/lfs
+export LC_ALL=POSIX
+export LFS_TGT=x86_64-lfs-linux-gnu
+export PATH=/tools/bin:$PATH
+# End of profile

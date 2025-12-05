@@ -41,6 +41,94 @@ Linux 系统中，每个进程启动时都会打开三个文件描述符：
 
 -----
 
+
+
+#### Here Document (`<<EOF`)
+
+这是 LFS 手册中出现频率极高的一个语法。
+
+**场景**：
+在 LFS 构建中，你需要创建很多配置文件（比如 `/etc/fstab`，或者编写一个简单的 C 语言测试代码）。
+如果每一行都用 `echo "..." >> file`，代码会变得非常难看且难以维护。
+
+**解决方案：Here Document (免交互文档)**
+它可以让你像在记事本里一样，一次性把多行内容写入文件。
+
+##### 1\. 核心语法
+
+```bash
+cat > 文件名 << EOF
+第一行内容
+第二行内容
+变量也是可以被解析的：${LFS}
+EOF
+```
+
+  * `cat > 文件名`：表示我们要写入（覆盖）一个文件。
+  * `<< EOF`：告诉 Shell，“从现在开始，我输入的每一行都是文件内容，直到你遇到 `EOF` 这个词为止”。
+  * `EOF`：这是一个界定符（End Of File），其实你可以用任何词（比如 `END`、`STOP`），但 `EOF` 是约定俗成的标准。
+
+
+
+代码编写得非常流畅！语法上完全没有错误，可以直接运行。
+
+但是，作为一个未来的 LFS 开发者，我必须指出一个**极其隐蔽的“逻辑陷阱”**，这个问题在编写生成脚本（Generate Scripts）时经常发生。
+
+###### 变量“提前”解析
+```sh
+LFS_TGT="x86_64-lfs-linux-gnu"
+cat > lfs_profile <<EOF
+export LFS=/mnt/lfs
+export LC_ALL=POSIX
+export LFS_TGT=${LFS_TGT}
+export PATH=/tools/bin:$PATH
+# End of profile
+EOF
+```
+在 `<<EOF` 模式下，Shell 会尝试解析**所有**的变量。
+
+  * `${LFS_TGT}` 被解析成 `x86_64...` -\> **这是我们要的**。
+  * `$PATH` 也会被解析成**你当前系统（WSL）的 Path** -\> **这可能不是我们要的**。
+
+**后果：**
+生成的 `lfs_profile` 文件里，内容会变成死板的：
+`export PATH=/tools/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin...`
+
+如果不希望 `$PATH` 在生成时被解析，而是保持字面上的 `$PATH` 符号，让脚本在**未来运行时**再去读取当时的 PATH，你需要给 `$` 加转义符 `\`。
+
+**修正版（LFS 最佳实践）：**
+
+```bash
+export PATH=/tools/bin:\$PATH  # 注意这里的反斜杠
+```
+
+这样生成的文件内容就会保留为：`export PATH=/tools/bin:$PATH`。
+
+-----
+##### 2\. LFS 实战演示
+
+假设我们要自动生成一个 DNS 配置文件。
+
+**普通写法 (累死人版)：**
+
+```bash
+echo "# DNS Config" > /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+```
+
+**Here Doc 写法 (优雅版)：**
+
+```bash
+cat > resolv.conf << EOF
+# DNS Config
+nameserver 8.8.8.8
+nameserver 1.1.1.1
+EOF
+```
+
+-----
+
 ### 🛠️ 任务三：模拟 LFS 编译日志系统
 
 请编写脚本 `log_test.sh`，完成以下需求。这一次我们要重点练习如何把“报错信息”也抓进文件里。
@@ -68,3 +156,26 @@ Linux 系统中，每个进程启动时都会打开三个文件描述符：
     * 使用 `cat` 命令显示 `${LOG_FILE}` 的内容。
 
 **请编写并运行脚本，看看你能否成功“抓住”那个报错信息！**
+
+### 🛠️ 任务四：自动化生成配置文件
+
+我们在 LFS 中经常需要创建一个名为 `.bash_profile` 的环境配置文件。请编写脚本 `create_config.sh`，模拟这个过程。
+
+**需求如下：**
+
+1.  **定义变量**：`LFS_TGT="x86_64-lfs-linux-gnu"`。
+2.  **使用 Here Document**：
+      * 创建一个名为 `lfs_profile` 的文件。
+      * 文件内容必须包含以下多行信息：
+        ```text
+        export LFS=/mnt/lfs
+        export LC_ALL=POSIX
+        export LFS_TGT=（这里请引用脚本开头定义的变量）
+        export PATH=/tools/bin:$PATH
+        # End of profile
+        ```
+3.  **验证**：
+      * 脚本运行后，使用 `cat lfs_profile` 查看生成的文件内容。
+      * **检查重点**：确认文件里的 `LFS_TGT` 是变成了具体的值（`x86_64...`），还是保留了变量名。
+
+**开始吧！这是我们在进入“文本处理三剑客（Sed/Awk/Grep）”之前的最后一个基础技能。**
