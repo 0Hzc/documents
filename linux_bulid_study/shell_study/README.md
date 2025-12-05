@@ -57,7 +57,7 @@
 
 ---
 
-### 1\. 脚本的骨架 (The Skeleton)
+### 第一阶段\. 脚本的骨架 (The Skeleton)
 
 任何 Shell 脚本的第一行都至关重要，它被称为 **Shebang**。
 
