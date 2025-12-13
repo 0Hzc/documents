@@ -104,3 +104,53 @@ git push
 Password for 'https://Tutehzc@github.com':
 
 在这里粘贴刚才复制的 Token (注意：在 Linux 终端里粘贴密码时，屏幕上通常不会显示任何字符，这是正常的，粘贴后直接按回车即可)。
+
+
+## Git commit 合并
+场景：当两次commit的主题是一致的，例如修改了文件a，和修改文件b，都是这一次修改，只不过commit时进行了两次commit，如何将这两个commit合并为一个
+这种情况（想要合并最近的两个 commit，但工作区又有新的未提交修改）非常常见。你可以按照以下步骤操作，既能合并 commit，又不会丢失你现在的修改：
+
+### 步骤 1：暂存当前的修改
+因为你现在有文件正在修改中（未提交），直接操作 commit 可能会有冲突或报错。先用 `stash` 把现场“保护”起来：
+
+```bash
+git stash
+```
+*(执行后，你的工作区会变干净，回到了最后一次 commit 的状态，别担心，修改都保存在 stash 栈里了)*
+
+### 步骤 2：合并最近的两个 Commit
+使用交互式变基（Interactive Rebase）来合并最近的 2 个提交：
+
+```bash
+git rebase -i HEAD~2
+```
+
+这时会弹出一个文本编辑器（比如 vim 或 nano），你会看到类似这样的内容：
+```text
+pick a1b2c3d fix1_v1.0 (第一次提交)
+pick e5f6g7h fix1_v1.0 (第二次提交)
+```
+
+**你需要做的修改：**
+把**第二行**开头的 `pick` 改为 `squash` (或者简写为 `s`)。
+*(意思是：保留第一个 commit，把第二个 commit 融合进第一个里)*
+
+修改后变成：
+```text
+pick a1b2c3d fix1_v1.0
+squash e5f6g7h fix1_v1.0
+```
+
+保存并退出编辑器（如果是 vim，按 `Esc` 输入 `:wq` 回车）。
+
+### 步骤 3：修改合并后的 Commit 信息
+退出后，Git 会再次弹出一个编辑器，让你编辑合并后的 commit message。你可以把两条信息删减成一条，保存并退出。
+
+### 步骤 4：恢复之前的修改
+现在 commit 已经合并好了，把刚才暂存的修改拿回来：
+
+```bash
+git stash pop
+```
+
+---
