@@ -23,12 +23,36 @@
 
 **脚本逻辑需求：**
 
-1.  **准备工作**：(Root 生成 -\> LFS 运行)。
+1.  **准备工作**：(Root 生成 -\> LFS 运行)
+
+Glibc 安装需要 etc 和 var 目录，且 lfs 用户需要有写入权限
+
+      ```bash
+      mkdir -p ${LFS}/lib64
+      mkdir -p ${LFS}/etc
+      mkdir -p ${LFS}/var
+      mkdir -p ${LFS}/usr/bin
+      mkdir -p ${LFS}/usr/lib
+      mkdir -p ${LFS}/usr/sbin
+      ```
+确保 lfs 用户有权写入这些目录
+
+      ```bash
+      chown -R lfs:lfs ${LFS}/lib64
+      chown -R lfs:lfs ${LFS}/etc
+      chown -R lfs:lfs ${LFS}/var
+      chown -R lfs:lfs ${LFS}/usr
+      ```
+
+对于 Glibc 的编译和安装，除了上述目录外，主要依赖：
+
+$LFS/usr/include：这是 Linux 内核头文件，你应该在之前的步骤（Class7）中已经安装好了。
+$LFS/tools 或 $LFS/usr：交叉编译器（Binutils, GCC）应该已经安装在这里，并且 $LFS_TGT 环境变量配置正确
 
 2.  **创建必要的符号链接 (LSB Compliance)**：
 
       * Glibc 编译时会检查系统是否符合 LSB 标准。在 64 位系统上，它需要一个指向动态链接器的符号链接。
-      * **在 Configure 之前**，需要执行以下逻辑（LFS 手册强行要求的）：
+      * **在 Configure 之前**，需要执行以下逻辑（LFS 手册强行要求的）,在步骤5之前执行下面命令：
 
     <!-- end list -->
 
@@ -93,8 +117,13 @@
 
 8.  **验证**：
 
-      * 检查 `$LFS/usr/lib/libc.so.6` 是否存在。
-      * 输出：“Glibc 构建完成！”
+      * 检查 `$LFS/usr/lib/libc.so.6` 是否存在。不要尝试运行它，而是检查它的文件属性。
+      * 检查文件是否存在及大小：`ls -lh /mnt/lfs/usr/lib/libc.so.6` 
+       - 预期结果：应该看到文件存在，大小约为 10MB+，且属于 lfs 用户。
+      * 检查文件类型：`file /mnt/lfs/usr/lib/libc.so.6` 
+       - 预期结果：应该显示 ELF 64-bit LSB shared object, x86-64...。
+
+
 
 **挑战**：Glibc 的编译时间比 GCC 还要长一点，而且对环境非常敏感。请务必确保刚才的 Linux Headers 安装正确。
 
