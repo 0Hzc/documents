@@ -80,15 +80,33 @@ C++ 程序运行需要标准库支持，这就是 **Libstdc++**。
       * **预期**：应该显示文件信息（通常是一个软链接指向具体的版本号）。
 
 2.  **验证头文件位置 (至关重要)**：
+在 lfs 用户 下手动运行以下这段代码，确认你的交叉编译器是健康的：
 
     ```bash
-    if [ -d "$LFS/tools/$LFS_TGT/include/c++/14.2.0" ]; then
-        echo "✅ C++ 头文件路径正确！"
-    else
-        echo "❌ 错误：找不到 C++ 头文件，交叉编译器将无法工作！"
-    fi
-    ```
+      echo "---------------------------------------------------"
+      echo "🔍 正在进行深度验证..."
 
+      # 验证 1: C++ 头文件是否安装到了 /tools
+      # 这一点至关重要，交叉编译器去这里找头文件
+      if [ -d "$LFS/tools/$LFS_TGT/include/c++/14.2.0" ]; then
+      echo "✅ [1/2] C++ 头文件路径正确 (/tools/...)"
+      else
+      echo "❌ [1/2] 失败：头文件未安装到 /tools 下！"
+      exit 1
+      fi
+
+      # 验证 2: 终极测试 - 尝试编译一个 C++ 小程序
+      echo 'int main(){}' > dummy.cxx
+      if $LFS_TGT-g++ dummy.cxx -o dummy; then
+      echo "✅ [2/2] 终极测试：交叉编译器成功编译 C++ 代码！"
+      rm dummy dummy.cxx
+      else
+      echo "❌ [2/2] 失败：交叉编译器无法编译 C++ 代码。"
+      exit 1
+      fi
+      echo "---------------------------------------------------"
+
+    ```
       * **原因**：如果这里的路径错了，后面编译 C++ 程序时会报 `iostream: No such file or directory`。
 
 **请编写 `build_libstdcxx.sh`。** 这步通常比较快（比起编译整个 GCC）。
