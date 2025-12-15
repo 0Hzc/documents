@@ -43,7 +43,7 @@
                     --build=$(build-aux/config.guess)
         ```
       * **安装**：`make DESTDIR=$LFS install`
-      * *注意：M4 不支持在 build 目录外编译，直接在源码根目录编译即可。*
+      * *注意：M4 不支持在 build 目录编译，直接在源码根目录编译即可。*
 
 3.  **任务二：编译 Ncurses**
 
@@ -67,9 +67,12 @@
                      --enable-widec
         ```
       * **安装**：
-        `make`
-        `make DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install`
-          * *解释*：`TIC_PATH` 是 Ncurses 特有的参数，用于指定编译好的 terminfo 编译器路径。
+
+       先执行 `make`
+
+       在执行 `make DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install`
+
+      * *解释*：`TIC_PATH` 是 Ncurses 特有的参数，用于指定编译好的 terminfo 编译器路径。
       * **修复库链接**：(Ncurses 的一个历史遗留问题，很多程序找 `libncurses.so` 但它生成的是 `libncursesw.so`)
         ```bash
         echo "INPUT(-lncursesw)" > $LFS/usr/lib/libncurses.so
