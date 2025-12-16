@@ -88,7 +88,7 @@ C++ 程序运行需要标准库支持，这就是 **Libstdc++**。
 
       # 验证 1: C++ 头文件是否安装到了 /tools
       # 这一点至关重要，交叉编译器去这里找头文件
-      if [ -d "$LFS/tools/$LFS_TGT/include/c++/14.2.0" ]; then
+      if [ -d "$LFS/tools/$LFS_TGT/include/c++/15" ]; then
       echo "✅ [1/2] C++ 头文件路径正确 (/tools/...)"
       else
       echo "❌ [1/2] 失败：头文件未安装到 /tools 下！"

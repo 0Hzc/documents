@@ -34,6 +34,11 @@ if [ -d "\${var%.tar.xz}" ];then
     rm -rf \${var%.tar.xz}
 fi
 
+# 1. 先去掉 .xz
+v1="\${temp%.xz}"
+# 2. 再去掉 .tar
+num="\${v1%.tar}"
+
 tar -xvf \${var}
 
 cd \${var%.tar.xz}
@@ -49,7 +54,7 @@ cd build
     --disable-multilib              \
     --disable-nls                   \
     --disable-libstdcxx-pch         \
-    --with-gxx-include-dir=/tools/\$LFS_TGT/include/c++/14.2.0
+    --with-gxx-include-dir=/tools/\$LFS_TGT/include/c++/\$num
 
 make
 
