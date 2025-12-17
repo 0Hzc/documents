@@ -86,3 +86,115 @@
 请尝试在一个脚本里连续完成这两个软件的编译。这能锻炼你处理“批量任务”的能力。
 
 **请编写 `build_temp_tools_part1.sh`！**
+
+**问题记录**
+问题1：执行完./configure后，执行make出现报错
+LFS 社区验证修复方案 (The "Sandwich" Patch)：
+```shell
+cd ..
+rm -rf build
+nano c++/etip.h.in
+```
+找到#include <iostream>这一行
+将以下内容全部替换：
+```c
+#if !((defined(__GNUG__) && defined(__EXCEPTIONS) && (__GNUG__ < 7)) || defined(__SUNPRO_CC))
+
+#  if HAVE_IOSTREAM
+
+#     include <iostream>
+
+#     if IOSTREAM_NAMESPACE
+
+using std::cerr;
+
+using std::endl;
+
+#     endif
+
+#  else
+
+#     include <iostream.h>
+
+#  endif
+
+#endif
+```
+替换成
+```c
+#if !((defined(__GNUG__) && defined(__EXCEPTIONS) && (__GNUG__ < 7)) || defined(__SUNPRO_CC))
+// [LFS 修复开始] 
+// 1. 摘下面具：取消 bool 定义，让 <iostream> 能正常读取
+#undef bool
+#undef TRUE
+#undef FALSE
+
+#include <iostream>
+
+// 2. 戴回面具：让后续 Ncurses 代码以为 bool 还是原来的 unsigned char
+// 这样就解决了 conflicting declaration 报错
+#ifndef TRUE
+#define TRUE (1)
+#endif
+
+#ifndef FALSE
+#define FALSE (0)
+#endif
+
+#define bool NCURSES_BOOL
+
+// 3. 使用标准命名空间，防止 cerr/endl 找不到
+using namespace std;
+// [LFS 修复结束]
+#endif
+```
+然后重新创建build文件夹，并进行./configure
+
+此时可以顺利执行make
+
+make执行完后
+
+执行make DESTDIR=$LFS TIC_PATH=$(pwd)/build/progs/tic install，
+
+会在最后一步报错，使用下面命令：手动用宿主机 `tic` 生成
+
+/usr/bin/tic -x -o $LFS/usr/share/terminfo ../misc/terminfo.src
+
+无报错，则ncurses顺利编译完，可删除文件夹了
+
+在终端中依次运行（复制粘贴）以下命令：
+
+1. 维度一：检查核心“零件” (库文件与头文件)
+
+确保库文件都在，且那个我们手动创建的“假替身”（linker script）内容正确。
+
+```bash
+# 1. 检查是否存在宽字符版本的动态库 (这是本体)
+ls -l $LFS/usr/lib/libncursesw.so.6* # 预期：应该列出文件，而不是报错 "No such file"
+
+# 2. 检查头文件 (这是编译 Bash 必须的)
+ls -l $LFS/usr/include/ncurses.h
+# 预期：列出文件
+
+# 3. 检查我们手动写的那个“指路牌”文件
+cat $LFS/usr/lib/libncurses.so
+# 预期输出：INPUT(-lncursesw)
+
+```
+
+---
+
+2. 维度二：检查“数据库” (Terminfo)
+
+这是你刚才手动用宿主机 `tic` 生成的部分。Bash 需要它来正确显示颜色和光标。
+
+```bash
+# 检查两个最常用的终端定义
+ls -d $LFS/usr/share/terminfo/x/xterm
+ls -d $LFS/usr/share/terminfo/l/linux
+
+```
+
+**预期结果**：如果不报错并显示了路径，说明数据库结构是完整的。
+
+---

@@ -28,78 +28,32 @@ LFS_TGT=\$(uname -m)-lfs-linux-gnu
 
 cd \$LFS/sources
 
-# var=\$(ls m4-*.tar.xz)
-# if [ -d "\${var%.tar.xz}" ];then
-#     echo "\${var%.tar.xz}残留，开始删除\${var%.tar.xz}"
-#     rm -rf \${var%.tar.xz}
-# fi
-
-# tar -xvf \${var}
-
-# cd \${var%.tar.xz}
-
-
-# ./configure --prefix=/usr   \
-#             --host=\$LFS_TGT \
-#             --build=\$(build-aux/config.guess)
-
-
-# make DESTDIR=\$LFS install
-
-# if [ \$? -eq 0 ];then
-#     echo "===============编译顺利结束=============="
-#     echo "开始删除(\${var%.tar.xz})文件夹"
-#     cd ..
-#     rm -rf \${var%.tar.xz}
-#     echo "删除结束"
-# fi
-
-var1=\$(ls ncurses-*.tar.gz)
-if [ -d "\${var1%.tar.gz}" ];then
-    echo "\${var1%.tar.gz}残留，开始删除\${var1%.tar.gz}"
-    rm -rf \${var1%.tar.gz}
+var=\$(ls m4-*.tar.xz)
+if [ -d "\${var%.tar.xz}" ];then
+    echo "\${var%.tar.xz}残留，开始删除\${var%.tar.xz}"
+    rm -rf \${var%.tar.xz}
 fi
 
-tar -xvf \${var1}
+tar -xvf \${var}
 
-cd \${var1%.tar.gz}
-
-sed -i s/mawk// configure
+cd \${var%.tar.xz}
 
 
-
-mkdir build
-
-cd build
-
-../configure --prefix=/usr           \
-             --host=\$LFS_TGT         \
-             --build=\$(./config.guess) \
-             --mandir=/usr/share/man \
-             --with-manpage-format=normal \
-             --with-shared           \
-             --without-normal        \
-             --with-cxx-shared       \
-             --without-debug         \
-             --without-ada           \
-             --disable-stripping     \
-             --enable-widec          \
-             --without-cxx-binding
+./configure --prefix=/usr   \
+            --host=\$LFS_TGT \
+            --build=\$(build-aux/config.guess)
 
 
-make
-make DESTDIR=\$LFS TIC_PATH=\$(pwd)/progs/tic install
-
-
-echo "INPUT(-lncursesw)" > \$LFS/usr/lib/libncurses.so
+make DESTDIR=\$LFS install
 
 if [ \$? -eq 0 ];then
     echo "===============编译顺利结束=============="
-    echo "开始删除(\${var1%.tar.gz})文件夹"
-    cd ../..
-    rm -rf \${var1%.tar.gz}
+    echo "开始删除(\${var%.tar.xz})文件夹"
+    cd ..
+    rm -rf \${var%.tar.xz}
     echo "删除结束"
 fi
+
 
 EOF
 
