@@ -158,3 +158,41 @@ echo "---------------------------------------------------"
 ```
 
 **请尝试在一个脚本中把这三座大山（Bash, Coreutils, Make）翻过去！**
+
+
+#### 第一步：清理宿主机的错误链接 (Root 身份)
+在当前的 Root 终端执行：
+
+```bash
+# 删除刚才误创建的垃圾链接
+rm -v /bin/bin /lib/lib /sbin/sbin
+```
+
+#### 第二步：正确设置 LFS 变量并创建链接 (Root 身份)
+确保变量设置正确后再执行操作：
+
+```bash
+# 1. 显式设置 LFS 变量
+export LFS=/mnt/lfs
+
+# 2. 再次检查 (必须看到 /mnt/lfs 才行)
+echo $LFS
+# 预期输出: /mnt/lfs
+
+# 3. 执行修复命令 (创建 LFS 系统的目录链接)
+for i in bin lib sbin; do
+  ln -sv usr/$i $LFS/$i
+done
+
+# 4. 修正权限 (因为是 Root 创建的，最好把所有权还给 lfs 用户)
+chown -h lfs:lfs $LFS/bin $LFS/lib $LFS/sbin
+```
+
+#### 第三步：验证
+执行完上述操作后，再次检查：
+
+```bash
+ls -l $LFS
+```
+这次你应该能看到 `bin -> usr/bin` 等链接，且目录内容是 LFS 的结构（包含 `sources`, `tools` 等）。
+
