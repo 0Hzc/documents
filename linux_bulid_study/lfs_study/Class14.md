@@ -21,7 +21,7 @@
 # 注意：这个命令是在 WSL 宿主机终端执行的！
 # 确保 LFS 变量存在
 export LFS=/mnt/lfs
-
+mkdir -pv $LFS/root
 cat > $LFS/root/init_chroot_system.sh << "EOF"
 #!/bin/bash
 set -e
