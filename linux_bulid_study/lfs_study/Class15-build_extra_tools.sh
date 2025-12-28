@@ -11,6 +11,11 @@ echo "=== 0. 环境准备 ==="
 # 关键：把 /tools/bin 加入 PATH，否则找不到 gcc
 export PATH=/bin:/usr/bin:/sbin:/usr/sbin:/tools/bin
 
+# 修复：创建 gcc 软链接，因为 /tools/bin 下只有 x86_64-lfs-linux-gnu-gcc
+if [ ! -e /tools/bin/gcc ]; then
+    ln -sv /tools/bin/x86_64-lfs-linux-gnu-gcc /tools/bin/gcc
+fi
+
 # 检查编译器是否工作
 if ! gcc --version >/dev/null 2>&1; then
     echo "❌ 错误：在 PATH 中找不到 gcc！"
